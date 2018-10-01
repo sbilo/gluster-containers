@@ -1,10 +1,10 @@
-FROM registry.fedoraproject.org/fedora:latest
+FROM arm32v7/fedora:latest
 
 ENV NAME="gluster-fedora" \
     DESC="GlusterFS on Fedora" \
     VERSION=0 \
     RELEASE=1 \
-    ARCH=x86_64 \
+    ARCH=arm32v7 \
     REPO="$FGC" \
     container=docker
 
@@ -27,10 +27,10 @@ ADD https://github.com/gluster/gluster-containers/blob/master/README.md /README.
 
 COPY gluster-setup.sh gluster-brickmultiplex.service gluster-brickmultiplex.sh gluster-setup.service /
 
-RUN dnf -y update && \
+RUN dnf -y update --forcearch=armv7hnl && \
     sed -i "s/LANG/\#LANG/g" /etc/locale.conf && \
-    dnf -y install systemd-udev glusterfs-server dbus-python nfs-utils attr iputils iproute glusterfs-geo-replication openssh-server openssh-clients cronie tar rsync sos sudo xfsprogs && \
-    dnf clean all && \
+    dnf -y --forcearch=armv7hnl install systemd-udev glusterfs-server dbus-python nfs-utils attr iputils iproute glusterfs-geo-replication openssh-server openssh-clients cronie tar rsync sos sudo xfsprogs && \
+    dnf --forcearch=armv7hnl clean all && \
     sed -i '/Port 22/c\Port 2222' /etc/ssh/sshd_config && \
     sed -i 's/Requires\=rpcbind\.service//g' /usr/lib/systemd/system/glusterd.service && \
     sed -i 's/rpcbind\.service/gluster-setup\.service/g' /usr/lib/systemd/system/glusterd.service && \
